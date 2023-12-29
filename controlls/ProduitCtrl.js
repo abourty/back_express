@@ -1,23 +1,23 @@
-const Produits = require("../models/ProduitsModel");
-const Vendeurs = require("../models/vendeurModel");
-const Encherisseurs = require("../models/encheriseeurModel");
-const wallets = require("../models/walletModel");
-const ProduitsCtrl = {
+let Produits = require("../models/ProduitsModel");
+let users = require("../models/UserModel");
+
+let wallets = require("../models/walletModel");
+let ProduitsCtrl = {
   AjouterProduits: async (req, res) => {
     try {
-      const { nom, description, prix, image, min, max } = req.body;
-      var expiryDate = new Date();
+      let { nom, description, prix, image, min, max } = req.body;
+      let expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 24);
 
-      const vendeur = await Vendeurs.findById(req.vendeur.id);
-      const url_imga = "http://localhost:5000/uploads/" + image;
-      const intervalle_Tolerance = {
+      let user = await users.findById(req.user.id);
+      let url_imga = "http://localhost:5000/uploads/" + image;
+      let intervalle_Tolerance = {
         min: min,
         max: max,
       };
 
-      const newProduit = new Produits({
-        vendeur: vendeur._id,
+      let newProduit = new Produits({
+        UserID: user._id,
         nom,
         description,
         prix,
@@ -32,11 +32,39 @@ const ProduitsCtrl = {
       return res.status(500).json({ msg: error.message });
     }
   },
+
+  getAllProduits:async(req,res)=>{
+    try {
+      let user = await users.findById(req.user.id);
+      let AllProduits= await Produits.find().populate("UserID", "nom prenom")
+      let filterArray=AllProduits.filter((item)=>item.UserID._id.toString()!==user._id.toString())
+      res.json({result:filterArray})
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+
+  getAllMesProduits:async(req,res)=>{
+    try {
+      let user = await users.findById(req.user.id);
+      let AllProduits= await Produits.find().populate({
+        path: "mombre_enchere.idUser",
+        select:
+          "nom prenom"
+      })
+      
+      let Arrayfilter=AllProduits.filter((item)=>item.UserID.toString()==user._id.toString())
+      res.json({result:Arrayfilter})
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+
   getProduitById: async (req, res) => {
     try {
       const findProduit = await Produits.findById({
         _id: req.params.id,
-      }).populate("vendeur", "nom prenom");
+      }).populate("UserID", "nom prenom");
       res.json({ result: findProduit });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -46,18 +74,18 @@ const ProduitsCtrl = {
   encherProduit: async (req, res) => {
     try {
       const { prix } = req.body;
-      const encherisseur = await Encherisseurs.findById(req.encherisseur.id);
-      const encherisseurconnect = await Encherisseurs.findById({
-        _id: encherisseur._id,
+      const user = await users.findById(req.user.id);
+      const userConnecte = await users.findById({
+        _id: user._id,
       });
       const findWallet = await wallets.findOne({
-        idencherisseur: encherisseurconnect._id,
+        idUser: userConnecte._id,
       });
       const findProduit = await Produits.findById({ _id: req.params.id });
 
       const requiredIndex = findProduit.mombre_enchere.findIndex((el) => {
         return (
-          el.idencherisseur.toString() === encherisseurconnect._id.toString()
+          el.idUser.toString() === userConnecte._id.toString()
         );
       });
       if (requiredIndex === -1) {
@@ -65,7 +93,7 @@ const ProduitsCtrl = {
           return res.status(400).json({ msg: "Votre montant est insuffisant" });
 
         findProduit.mombre_enchere.push({
-          idencherisseur: encherisseur._id,
+          idUser: userConnecte._id,
           prix: prix,
         });
         const updateProduit = await Produits.findByIdAndUpdate(
@@ -89,17 +117,17 @@ const ProduitsCtrl = {
   updateencherProduit: async (req, res) => {
     try {
       const { prix } = req.body;
-      const encherisseur = await Encherisseurs.findById(req.encherisseur.id);
-      const encherisseurconnect = await Encherisseurs.findById({
-        _id: encherisseur._id,
+      const user = await users.findById(req.user.id);
+      const userConnecte = await users.findById({
+        _id: user._id,
       });
       const findWallet = await wallets.findOne({
-        idencherisseur: encherisseurconnect._id,
+        idUser: userConnecte._id,
       });
       const findProduit = await Produits.findById({ _id: req.params.id });
       const requiredIndex = findProduit.mombre_enchere.findIndex((el) => {
         return (
-          el.idencherisseur.toString() === encherisseurconnect._id.toString()
+          el.idUser.toString() === userConnecte._id.toString()
         );
       });
       if (requiredIndex === -1) {

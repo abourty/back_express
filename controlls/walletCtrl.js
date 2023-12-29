@@ -1,12 +1,12 @@
 const wallets = require("../models/walletModel");
-const Encheriseurs = require("../models/encheriseeurModel");
+const users = require("../models/UserModel");
 
 const WalletCtrl = {
   getMonWalet: async (req, res) => {
     try {
-      const encherisseur = await Encheriseurs.findById(req.encherisseur.id);
+      const user = await users.findById(req.user.id);
       const findWallet = await wallets.findOne({
-        idencherisseur: encherisseur._id,
+        idUser: user._id,
       });
       res.json({ result: findWallet });
     } catch (error) {
@@ -17,9 +17,9 @@ const WalletCtrl = {
   updateMontantWalet: async (req, res) => {
     try {
       const { montant } = req.body;
-      const encherisseur = await Encheriseurs.findById(req.encherisseur.id);
+      const user = await users.findById(req.user.id);
       const findWallet = await wallets.findOne({
-        idencherisseur: encherisseur._id,
+        idUser: user._id,
       });
       const updatewalet = await wallets.findByIdAndUpdate(
         { _id: findWallet._id },

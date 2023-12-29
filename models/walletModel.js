@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const walletSchema = new mongoose.Schema({
-  idencherisseur: {
+  idUser: {
     type: mongoose.Types.ObjectId,
-    ref: "encherisseur",
+    ref: "User",
   },
   montant: {
     type: Number,

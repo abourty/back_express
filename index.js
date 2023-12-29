@@ -17,7 +17,7 @@ mongoose.connect(
   },
 
   (error) => {
-    var db = mongoose.connection;
+    let db = mongoose.connection;
     if (error) {
       db.on("error", console.error.bind(console, "MongoDB connection error:"));
     } else {
@@ -28,13 +28,13 @@ mongoose.connect(
 
 //import routes
 
-const VendeurRouter = require("./routes/Vendeur.Routes");
-const ProduitRouter = require("./routes/Produit.Routes");
-const EncherisseurRouter = require("./routes/Encherisseur.Routes");
-const walletRouter = require("./routes/Wallet.Routes");
-const imageRouter = require("./routes/imagesproduits");
+let UserRouter=require('./routes/User.Routes')
+let ProduitRouter = require("./routes/Produit.Routes");
 
-const app = express();
+let walletRouter = require("./routes/Wallet.Routes");
+let imageRouter = require("./routes/imagesproduits");
+
+let app = express();
 
 app.use("/uploads", express.static(__dirname + "/uploads"));
 app.use(express.static("/uploads"));
@@ -52,12 +52,12 @@ app.get("/", (req, res) => {
   res.send("welcom to my app");
 });
 
-app.use("/api", VendeurRouter);
+app.use("/api",UserRouter)
 app.use("/api", ProduitRouter);
 app.use("/api", imageRouter);
-app.use("/api", EncherisseurRouter);
+
 app.use("/api", walletRouter);
-const PORt = process.env.port;
+let PORt = process.env.port;
 
 
 app.listen(PORt, async () => {

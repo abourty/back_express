@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const ProduitsSchema = new mongoose.Schema({
-  vendeur: {
+  UserID: {
     type: mongoose.Types.ObjectId,
-    ref: "vendeur",
+    ref: "User",
   },
   nom: {
     type: String,
@@ -40,15 +40,18 @@ const ProduitsSchema = new mongoose.Schema({
 
   mombre_enchere: [
     {
-      idencherisseur: {
+      idUser: {
         type: mongoose.Types.ObjectId,
-        ref: "encherisseur",
+        ref: "User",
       },
       prix: {
         type: mongoose.Types.Decimal128,
       },
     },
   ],
+
+ 
+
 });
 
 module.exports = mongoose.model("produit", ProduitsSchema);

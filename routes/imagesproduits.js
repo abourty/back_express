@@ -1,11 +1,9 @@
-const router = require("express").Router();
-const multer = require("multer");
-const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
+let router = require("express").Router();
+let multer = require("multer");
+let mongoose = require("mongoose");
 
-const path = require("path");
 
-var storage = multer.diskStorage({
+let storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
   },
@@ -14,7 +12,7 @@ var storage = multer.diskStorage({
   },
 });
 
-var upload = multer({
+let upload = multer({
   storage: storage,
 });
 

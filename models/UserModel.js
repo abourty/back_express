@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+let mongoose = require("mongoose");
 
-const VendeurSchema = new mongoose.Schema({
+let UserSchema = new mongoose.Schema({
   nom: {
     type: String,
     required: true,
@@ -28,4 +28,5 @@ const VendeurSchema = new mongoose.Schema({
     trim: true,
   },
 });
-module.exports = mongoose.model("vendeur", VendeurSchema);
+
+module.exports = mongoose.model("User", UserSchema);
